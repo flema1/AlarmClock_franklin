@@ -1,0 +1,252 @@
+<html>
+   <head>
+      <style type="text/css">
+         .clock {
+         border-radius: 50%;
+         background: #fff url(ios_clock.svg) no-repeat center;
+         background-size: 88%;
+         height: 37em;
+         margin-top: -15%;
+         margin-left: 3%;
+         position: relative;
+         width: 37em;
+         }
+         .hours {
+         background: #000;
+         height: 20%;
+         left: 48.75%;
+         position: absolute;
+         top: 30%;
+         transform-origin: 50% 100%;
+         width: 2.5%;
+         background:red;
+         }
+         .minutes {
+         background: #000;
+         height: 40%;
+         left: 49%;
+         position: absolute;
+         top: 10%;
+         transform-origin: 50% 100%;
+         width: 2%;
+         }
+         .seconds {
+         background: #000;
+         height: 45%;
+         left: 49.5%;
+         position: absolute;
+         top: 14%;
+         transform-origin: 50% 80%;
+         width: 1%;
+         z-index: 8;
+         }
+         #alarm{
+         position: absolute;
+         margin-left: 33%;
+         }
+         #alarm_div{
+         position: relative;
+         margin-top:   240px;
+         margin-left: 30%;
+         }
+         #time{
+         margin-top: 8%;
+         margin-left: 60%;
+         background-color: red;
+         font-size: 50px;
+         }
+         #displayScreen{
+         padding-left: 50px;
+         font-size: 50px;
+         }
+         .hours{
+         animation: rotateHours 43200s infinite steps(60);
+         }
+         .minutes {
+         animation: rotateMinutes 3600s infinite steps(60);
+         }
+         .seconds{
+         animation: rotateSeconds 60s infinite steps(60);
+         }
+      </style>
+   </head>
+   </head>
+   <body onload="webClock(), start();">
+      <audio  id="alarmSiren" loop autoplay>
+         <source src="#" type="audio/mp4">
+         Your browser does not support the audio element.
+      </audio>
+      <div id="alarm" style="display: block;">
+         <form nam="setAlarm">
+            <tr>
+               <td>
+                  <input type="text" id="setHours" name="sHours" style="background: transparent;
+                     font-size:20px;">
+                  <input type="text" id="setMinutes" name="sMinutes" style="background: transparent
+                     ;
+                     font-size:20px;">
+                  <input type="text" id="setSeconds" name="sMinutes" style="background: transparent;
+                     ;font-size:20px;">
+               </td>
+            </tr>
+         </form>
+      </div>
+      <div id="buttons" style="display: inline-block;">
+         <input type="button" value="Set Alarm"
+            onclick="setAlarm();" 
+            style="font-size:15px;">
+         <input type="button" value="Snooze Alarm"
+            onclick="snooze();" 
+            style="font-size:15px;">
+         <input type="button" value="Clear Alarm"
+            onclick="clearAlarm()     ;" 
+            style="font-size:15px;">
+      </div>
+      <p id="time"></p>
+      <div class="clock">
+         <div class="hours"></div>
+         <div class="minutes"></div>
+         <div class="seconds"></div>
+      </div>
+      <p id= "displayScreen" style="font-size: 50;"></p>
+   </body>
+   <script>
+      var clock = new Date();
+          var hours, minutes, seconds ;
+      
+      function webClock(){
+      
+          var clock = new Date();
+           hours = clock.getHours();
+           minutes = clock.getMinutes();
+           seconds = clock.getSeconds();
+       minutes = addZero(minutes);
+       seconds = addZero(seconds );
+      
+      var amPM;
+      
+      if (hours>12){
+      hours=hours-12;
+      amPM="PM";
+      }
+      else {amPM="AM";}
+      
+      if (hours==0){
+          hours=12;
+          amPM="AM";
+      }
+      
+      document.getElementById('time').innerHTML =
+          hours + ":" + minutes + ":" + seconds+" "+amPM;
+           setTimeout(webClock, 1000);//displays contantly
+           setTimeout(start, 1000);
+           setTimeout(checkAlarm, 1000);
+          }  
+          function addZero(i) {
+          if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+          return i;
+      }
+      
+      var alarmHours;
+      var alarmMinutes;
+      var bool=false; 
+      
+      function setAlarm(){
+      alarmHours=document.getElementById('setHours').value;
+      alarmMinutes=document.getElementById('setMinutes').value;
+      alarmSeconds=document.getElementById('setSeconds').value;
+      document.getElementById('setHours').value=null;
+      document.getElementById('setMinutes').value=null;
+      document.getElementById('setSeconds').value=null;
+      
+      bool=true;
+      document.getElementById('displayScreen').innerHTML="Current alarm time is "+ alarmHours+" : "+alarmMinutes+" : "+alarmSeconds;
+      }
+      
+      function checkAlarm(){
+      if (bool==true&& alarmHours==hours && alarmMinutes==minutes && alarmSeconds==seconds){
+       document.getElementById('alarmSiren').src='alarmAudio2.mp4'; 
+      } 
+      }
+      function snooze(){
+      document.getElementById('alarmSiren').src='#';
+      alarmSeconds=Number(seconds)+10;
+      if (Number(alarmSeconds)+5>60){
+          alarmMinutes=minutes;
+          alarmMinutes++;
+          alarmSeconds="00"
+      }
+      
+      if (alarmMinutes>60 ){
+          alarmHours=hours;
+          alarmHours++;
+          alarmMinutes=0;
+      }
+      
+      document.getElementById('displayScreen').innerHTML="New alarm time is "+ alarmHours+" : "+alarmMinutes+" : "+alarmSeconds;
+      
+      }
+      
+      function clearAlarm(){
+      document.getElementById('setHours').value=null;
+      document.getElementById('setMinutes').value=null;
+      document.getElementById('setSeconds').value=null;
+      document.getElementById('displayScreen').innerHTML=null;
+      document.getElementById('alarmSiren').src='#';
+      }
+      
+      var element, sheet; 
+      element = document.createElement('style');
+      
+      // Append style element to head
+      document.head.appendChild(element);
+      
+      // Reference to the stylesheet
+      sheet = element.sheet;
+      function start() {
+      //var seconds=45; 
+      
+      
+      
+      
+      var styles = '@keyframes rotateSeconds{';
+      styles += ' from {';
+      styles += "transform: rotateZ("+seconds*6+"deg);";
+      styles += '}';
+      styles += 'to{';
+      styles += 'transform: rotateZ('+(360+(seconds*6))+'deg);';
+      styles += '}';
+      styles += '}';
+      sheet.insertRule(styles, 0);
+      
+          
+      //-webkit-
+      
+      var styles = '@keyframes rotateMinutes{';
+      styles += ' from {';
+      styles += "transform: rotateZ("+minutes*6+"deg);";
+      styles += '}';
+      styles += 'to{';
+      styles += 'transform: rotateZ('+(360+(minutes*6))+'deg);';
+      styles += '}';
+      styles += '}';
+      sheet.insertRule(styles, 1);
+      
+      
+      var styles = '@keyframes rotateHours{';
+      styles += ' from {';
+      styles += "transform: rotateZ("+ 30* hours+"deg);";
+      styles += '}';
+      styles += 'to{';
+      styles += 'transform: rotateZ('+(360+(hours*30))+'deg);';
+      styles += '}';
+      styles += '}';
+      
+      sheet.insertRule(styles, 2);
+      
+      }
+      
+   </script>
+   </body>
+</html>
+<script>
